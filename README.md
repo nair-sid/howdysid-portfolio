@@ -1,6 +1,6 @@
 # Sidharth Nair — Product Manager Portfolio
 
-**Live site:** howdysid.com
+**Live site:** www.howdysid.com
 
 
 A live, interactive portfolio built to show product management thinking through working artifacts, not slides. Instead of case-study writeups, each project on this site is a functioning tool a visitor can actually use in the browser.
