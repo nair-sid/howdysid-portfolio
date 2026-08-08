@@ -280,14 +280,15 @@ a{color:inherit;}
 .btn-primary{
   background:var(--orange);
   color:var(--ink);
+  border:1px solid transparent;
 }
-.btn-primary:hover{transform:translateY(-1px);}
+.btn-primary:hover{transform:translateY(-1px);border-color:#fff;}
 .btn-ghost{
   background:transparent;
   color:var(--paper);
   border:1px solid var(--line);
 }
-.btn-ghost:hover{border-color:rgba(241,239,233,0.35);}
+.btn-ghost:hover{transform:translateY(-1px);border-color:#fff;}
 
 .hero-figure{
   display:flex;
