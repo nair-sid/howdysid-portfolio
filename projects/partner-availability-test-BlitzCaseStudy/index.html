@@ -7,15 +7,20 @@
 <style>
   :root{
     --ink:#0B0D0F;
+    --ink-2:#1B1E22;
     --ink-soft:#8A8F96;
+    --ink-soft-light:#585E66;
     --paper:#F3F1EA;
     --paper-dim:#E8E1D4;
     --line:rgba(243,241,234,0.11);
+    --line-light:rgba(11,13,15,0.13);
     --petal:#FF6A3D;
+    --petal-deep:#C9431A;
     --petal-tint:rgba(255,106,61,0.12);
     --transit:#FFB27A;
     --resolved:#4DD4B0;
     --active:#55B8FF;
+    --active-deep:#0D5C99;
     --active-tint:rgba(85,184,255,0.14);
     --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
     --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
@@ -39,9 +44,9 @@
   }
 
   .back-link{
-    position:absolute;
+    position:fixed;
     top:18px;
-    left:24px;
+    left:18px;
     display:inline-flex;
     align-items:center;
     gap:7px;
@@ -52,14 +57,18 @@
     text-transform:uppercase;
     color:var(--paper-dim);
     background:rgba(11,13,15,0.78);
+    backdrop-filter:blur(6px);
     border:1px solid var(--line);
     border-radius:20px;
     padding:8px 14px 8px 12px;
     text-decoration:none;
     transition:border-color 0.2s ease, color 0.2s ease;
-    z-index:10;
+    z-index:40;
   }
   .back-link:hover{ color:var(--petal); border-color:rgba(255,106,61,0.4); }
+  @media (max-width:480px){
+    .back-link{ position:static; display:inline-flex; margin-bottom:18px; }
+  }
 
   /* ---------- Masthead ---------- */
   .masthead{ max-width:680px; margin-bottom:36px; }
@@ -123,7 +132,7 @@
     border:none;
     border-radius:999px;
     background:transparent;
-    color:var(--ink-soft);
+    color:var(--ink-soft-light);
     cursor:pointer;
   }
   .flow-toggle button[aria-pressed="true"]{
@@ -133,9 +142,9 @@
 
   .metric-chip{
     font-size:13px;
-    color:var(--ink-soft);
+    color:var(--ink-soft-light);
     background:var(--paper-dim);
-    border:1px solid var(--line);
+    border:1px solid var(--line-light);
     padding:8px 14px;
     border-radius:10px;
   }
@@ -154,10 +163,11 @@
   .phone-frame{
     width:300px;
     height:610px;
-    background:var(--ink);
+    background:var(--ink-2);
+    border:1px solid rgba(255,255,255,0.07);
     border-radius:38px;
     padding:14px;
-    box-shadow:0 30px 60px -20px rgba(0,0,0,0.55);
+    box-shadow:0 30px 60px -20px rgba(0,0,0,0.6), inset 0 0 0 1px rgba(0,0,0,0.3);
   }
 
   .phone-notch{
@@ -166,12 +176,13 @@
     border-radius:0 0 14px 14px;
     margin:0 auto 8px;
     position:relative;
+    z-index:2;
   }
   .phone-notch::after{
     content:"";
     position:absolute;
     width:36px; height:5px;
-    background:#0C1218;
+    background:#3A3F45;
     border-radius:3px;
     left:50%; top:6px;
     transform:translateX(-50%);
@@ -186,6 +197,64 @@
     overflow:hidden;
     display:flex;
     flex-direction:column;
+    position:relative;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,0.6), inset 0 0 24px rgba(11,13,15,0.05);
+  }
+
+  .phone-statusbar{
+    flex:0 0 auto;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:10px 22px 0;
+    font-family:var(--sans);
+    font-size:12.5px;
+    font-weight:700;
+    color:var(--ink);
+    letter-spacing:0.01em;
+  }
+  .ps-icons{ display:flex; align-items:center; gap:5px; }
+  .ps-signal{ display:flex; align-items:flex-end; gap:1.5px; height:9px; }
+  .ps-signal span{ width:2.5px; background:var(--ink); border-radius:1px; }
+  .ps-signal span:nth-child(1){ height:35%; }
+  .ps-signal span:nth-child(2){ height:60%; }
+  .ps-signal span:nth-child(3){ height:80%; }
+  .ps-signal span:nth-child(4){ height:100%; }
+  .ps-wifi{ width:13px; height:9px; }
+  .ps-battery{
+    width:22px; height:11px;
+    border:1.3px solid var(--ink);
+    border-radius:2.5px;
+    padding:1.5px;
+    position:relative;
+    display:flex;
+  }
+  .ps-battery::after{
+    content:"";
+    position:absolute;
+    right:-3px; top:3px;
+    width:1.5px; height:4px;
+    background:var(--ink);
+    border-radius:0 1px 1px 0;
+  }
+  .ps-battery span{ flex:1; background:var(--ink); border-radius:0.5px; }
+
+  .phone-content{
+    flex:1;
+    min-height:0;
+    display:flex;
+    flex-direction:column;
+    overflow-y:auto;
+  }
+
+  .home-indicator{
+    flex:0 0 auto;
+    width:120px;
+    height:4px;
+    border-radius:3px;
+    background:var(--ink);
+    opacity:0.22;
+    margin:8px auto 10px;
   }
 
   .screen-nav{
@@ -197,7 +266,7 @@
   .screen-nav button{
     width:34px; height:34px;
     border-radius:50%;
-    border:1px solid var(--line);
+    border:1px solid var(--line-light);
     background:var(--paper);
     color:var(--ink);
     font-size:15px;
@@ -234,8 +303,8 @@
     align-items:center;
     padding:16px 18px 10px;
     font-family:var(--mono);
-    font-size:11px;
-    color:var(--ink-soft);
+    font-size:11.5px;
+    color:var(--ink-soft-light);
     position:relative;
   }
   .app-back{ font-size:18px; color:var(--ink); margin-right:auto; }
@@ -243,7 +312,7 @@
     font-family:var(--sans);
     font-weight:800;
     font-size:14px;
-    color:var(--petal);
+    color:var(--petal-deep);
     letter-spacing:-0.01em;
     position:absolute;
     left:50%;
@@ -256,7 +325,7 @@
     font-size:11px;
     letter-spacing:0.06em;
     text-transform:uppercase;
-    color:var(--ink-soft);
+    color:var(--ink-soft-light);
     margin:6px 0 6px;
   }
   .app-title{
@@ -265,15 +334,15 @@
     letter-spacing:-0.01em;
     margin:0 0 10px;
   }
-  .app-sub{ font-size:13.5px; color:var(--ink-soft); margin:0 0 4px; }
+  .app-sub{ font-size:13.5px; color:var(--ink-soft-light); margin:0 0 4px; }
 
   .line-item{
     display:flex; justify-content:space-between;
     font-size:13.5px;
     padding:8px 0;
-    border-bottom:1px solid var(--line);
+    border-bottom:1px solid var(--line-light);
   }
-  .line-item .k{ color:var(--ink-soft); }
+  .line-item .k{ color:var(--ink-soft-light); }
   .line-item .v{ font-weight:600; }
 
   .app-status-row{
@@ -343,20 +412,20 @@
   @keyframes popIn{ from{ opacity:0; transform:scale(0);} to{ opacity:1; transform:scale(1);} }
 
   .radar-copy .radar-count{ font-size:15.5px; font-weight:800; margin:0; }
-  .count-num{ font-family:var(--mono); color:var(--active); }
-  .radar-sub{ font-size:11px; color:var(--ink-soft); margin:2px 0 0; font-family:var(--mono); }
+  .count-num{ font-family:var(--mono); color:var(--active-deep); }
+  .radar-sub{ font-size:11px; color:var(--ink-soft-light); margin:2px 0 0; font-family:var(--mono); }
 
   .radar-empty{
     display:flex;
     align-items:center;
     gap:10px;
     background:var(--paper-dim);
-    border:1px dashed var(--line);
+    border:1px dashed var(--line-light);
     border-radius:16px;
     padding:14px 16px;
     margin:16px 0 4px;
     font-size:12.5px;
-    color:var(--ink-soft);
+    color:var(--ink-soft-light);
   }
 
   /* ---------- Annotation rail ---------- */
@@ -390,7 +459,7 @@
     color:var(--petal);
     margin:0 0 8px;
   }
-  .fix-body{ font-size:14.5px; margin:0 0 18px; color:var(--ink); }
+  .fix-body{ font-size:14.5px; margin:0 0 18px; color:var(--paper); }
 
   .metric-block{
     background:var(--paper);
@@ -398,20 +467,20 @@
     padding:16px 18px;
     margin-bottom:14px;
   }
-  .metric-label{ font-size:11px; color:var(--ink-soft); margin:0 0 3px; text-transform:uppercase; letter-spacing:0.05em; }
-  .metric-value{ font-size:15px; font-weight:800; margin:0 0 4px; }
-  .metric-detail{ font-size:13px; color:var(--ink-soft); margin:0 0 12px; }
-  .metric-ladder{ font-size:12.5px; color:var(--active); font-weight:600; margin:0; }
+  .metric-label{ font-size:11px; color:var(--ink-soft-light); margin:0 0 3px; text-transform:uppercase; letter-spacing:0.05em; }
+  .metric-value{ font-size:15px; font-weight:800; margin:0 0 4px; color:var(--ink); }
+  .metric-detail{ font-size:13px; color:var(--ink-soft-light); margin:0 0 12px; }
+  .metric-ladder{ font-size:12.5px; color:var(--active-deep); font-weight:600; margin:0; }
 
   .isolation-note{
     font-size:12.5px;
-    color:var(--ink-soft);
+    color:var(--paper-dim);
     margin:0 0 16px;
     padding-left:12px;
     border-left:2px solid var(--line);
   }
 
-  .ac-list{ margin:0 0 18px; padding-left:18px; font-size:13px; color:var(--ink); }
+  .ac-list{ margin:0 0 18px; padding-left:18px; font-size:13px; color:var(--paper-dim); }
   .ac-list li{ margin-bottom:6px; }
 
   .rail-btn{
@@ -479,7 +548,18 @@
     <div class="phone-column">
       <div class="phone-frame">
         <div class="phone-notch"></div>
-        <div class="phone-screen" id="screenRoot" role="region" aria-label="Phone screen preview" aria-live="polite"></div>
+        <div class="phone-screen">
+          <div class="phone-statusbar" aria-hidden="true">
+            <span class="ps-time">9:41</span>
+            <span class="ps-icons">
+              <span class="ps-signal"><span></span><span></span><span></span><span></span></span>
+              <svg class="ps-wifi" viewBox="0 0 16 12" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M8 9.6a1.2 1.2 0 1 1 0 2.4 1.2 1.2 0 0 1 0-2.4Z" fill="var(--ink)"/><path d="M4.6 7.1a4.8 4.8 0 0 1 6.8 0" stroke="var(--ink)" stroke-width="1.4" stroke-linecap="round"/><path d="M2 4.4a8.5 8.5 0 0 1 12 0" stroke="var(--ink)" stroke-width="1.4" stroke-linecap="round"/></svg>
+              <span class="ps-battery"><span></span></span>
+            </span>
+          </div>
+          <div class="phone-content" id="screenRoot" role="region" aria-label="Phone screen preview" aria-live="polite"></div>
+          <div class="home-indicator"></div>
+        </div>
       </div>
       <div class="screen-nav">
         <button type="button" id="prevBtn" aria-label="Previous screen">&larr;</button>
