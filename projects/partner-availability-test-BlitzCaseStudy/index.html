@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Partner Availability Test — Clickable Prototype</title>
+<style>
+  :root{
+    --ink:#0B0D0F;
+    --ink-soft:#8A8F96;
+    --paper:#F3F1EA;
+    --paper-dim:#E8E1D4;
+    --line:rgba(243,241,234,0.11);
+    --petal:#FF6A3D;
+    --petal-tint:rgba(255,106,61,0.12);
+    --transit:#FFB27A;
+    --resolved:#4DD4B0;
+    --active:#55B8FF;
+    --active-tint:rgba(85,184,255,0.14);
+    --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  }
+
+  *{ box-sizing:border-box; }
+
+  body{
+    margin:0;
+    background:radial-gradient(circle at top left, rgba(255,106,61,0.16), transparent 28%), var(--ink);
+    color:var(--paper);
+    font-family:var(--sans);
+    line-height:1.5;
+  }
+
+  .page{
+    max-width:1040px;
+    margin:0 auto;
+    padding:48px 24px 72px;
+    position:relative;
+  }
+
+  .back-link{
+    position:absolute;
+    top:18px;
+    left:24px;
+    display:inline-flex;
+    align-items:center;
+    gap:7px;
+    font-family:var(--mono);
+    font-size:11px;
+    font-weight:600;
+    letter-spacing:0.04em;
+    text-transform:uppercase;
+    color:var(--paper-dim);
+    background:rgba(11,13,15,0.78);
+    border:1px solid var(--line);
+    border-radius:20px;
+    padding:8px 14px 8px 12px;
+    text-decoration:none;
+    transition:border-color 0.2s ease, color 0.2s ease;
+    z-index:10;
+  }
+  .back-link:hover{ color:var(--petal); border-color:rgba(255,106,61,0.4); }
+
+  /* ---------- Masthead ---------- */
+  .masthead{ max-width:680px; margin-bottom:36px; }
+
+  .kicker{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    font-family:var(--mono);
+    font-size:11px;
+    letter-spacing:0.14em;
+    text-transform:uppercase;
+    color:var(--petal);
+    margin-bottom:14px;
+  }
+  .kicker::before{
+    content:"";
+    width:16px; height:1px;
+    background:var(--petal);
+    display:inline-block;
+  }
+
+  h1{
+    font-size:clamp(28px, 4vw, 40px);
+    font-weight:800;
+    letter-spacing:-0.02em;
+    margin:0 0 14px;
+  }
+
+  .dek{
+    font-size:16px;
+    color:var(--ink-soft);
+    margin:0;
+    max-width:62ch;
+  }
+
+  /* ---------- Controls bar ---------- */
+  .controls-bar{
+    display:flex;
+    flex-wrap:wrap;
+    align-items:center;
+    justify-content:space-between;
+    gap:14px;
+    margin:36px 0 28px;
+    padding-bottom:18px;
+    border-bottom:1px solid var(--line);
+  }
+
+  .flow-toggle{
+    display:inline-flex;
+    background:var(--paper-dim);
+    border-radius:999px;
+    padding:4px;
+    gap:2px;
+  }
+  .flow-toggle button{
+    font-family:var(--sans);
+    font-size:14px;
+    font-weight:600;
+    padding:9px 20px;
+    border:none;
+    border-radius:999px;
+    background:transparent;
+    color:var(--ink-soft);
+    cursor:pointer;
+  }
+  .flow-toggle button[aria-pressed="true"]{
+    background:var(--ink);
+    color:var(--paper);
+  }
+
+  .metric-chip{
+    font-size:13px;
+    color:var(--ink-soft);
+    background:var(--paper-dim);
+    border:1px solid var(--line);
+    padding:8px 14px;
+    border-radius:10px;
+  }
+  .metric-chip strong{ color:var(--ink); }
+
+  /* ---------- Stage ---------- */
+  .stage{
+    display:grid;
+    grid-template-columns:340px 1fr;
+    gap:40px;
+    align-items:start;
+  }
+
+  .phone-column{ display:flex; flex-direction:column; align-items:center; }
+
+  .phone-frame{
+    width:300px;
+    height:610px;
+    background:var(--ink);
+    border-radius:38px;
+    padding:14px;
+    box-shadow:0 30px 60px -20px rgba(0,0,0,0.55);
+  }
+
+  .phone-notch{
+    width:70px; height:18px;
+    background:var(--ink);
+    border-radius:0 0 14px 14px;
+    margin:0 auto 8px;
+    position:relative;
+  }
+  .phone-notch::after{
+    content:"";
+    position:absolute;
+    width:36px; height:5px;
+    background:#0C1218;
+    border-radius:3px;
+    left:50%; top:6px;
+    transform:translateX(-50%);
+  }
+
+  .phone-screen{
+    background:var(--paper);
+    color:var(--ink);
+    width:100%;
+    height:calc(100% - 26px);
+    border-radius:26px;
+    overflow:hidden;
+    display:flex;
+    flex-direction:column;
+  }
+
+  .screen-nav{
+    display:flex;
+    align-items:center;
+    gap:16px;
+    margin-top:18px;
+  }
+  .screen-nav button{
+    width:34px; height:34px;
+    border-radius:50%;
+    border:1px solid var(--line);
+    background:var(--paper);
+    color:var(--ink);
+    font-size:15px;
+    cursor:pointer;
+  }
+  .screen-nav button:disabled{ opacity:0.3; cursor:default; }
+
+  .dots{ display:flex; gap:8px; }
+  .dots button{
+    width:8px; height:8px;
+    border-radius:50%;
+    border:none;
+    padding:0;
+    background:var(--line);
+    cursor:pointer;
+  }
+  .dots button[aria-current="true"]{
+    background:var(--petal);
+    width:20px;
+    border-radius:5px;
+  }
+
+  .screen-label{
+    margin:12px 0 0;
+    font-family:var(--mono);
+    font-size:12px;
+    color:var(--ink-soft);
+    letter-spacing:0.02em;
+  }
+
+  /* ---------- In-app screen content ---------- */
+  .app-topbar{
+    display:flex;
+    align-items:center;
+    padding:16px 18px 10px;
+    font-family:var(--mono);
+    font-size:11px;
+    color:var(--ink-soft);
+    position:relative;
+  }
+  .app-back{ font-size:18px; color:var(--ink); margin-right:auto; }
+  .app-wordmark{
+    font-family:var(--sans);
+    font-weight:800;
+    font-size:14px;
+    color:var(--petal);
+    letter-spacing:-0.01em;
+    position:absolute;
+    left:50%;
+    transform:translateX(-50%);
+  }
+
+  .app-body{ padding:14px 22px 22px; flex:1; }
+  .app-eyebrow{
+    font-family:var(--mono);
+    font-size:11px;
+    letter-spacing:0.06em;
+    text-transform:uppercase;
+    color:var(--ink-soft);
+    margin:6px 0 6px;
+  }
+  .app-title{
+    font-size:20px;
+    font-weight:800;
+    letter-spacing:-0.01em;
+    margin:0 0 10px;
+  }
+  .app-sub{ font-size:13.5px; color:var(--ink-soft); margin:0 0 4px; }
+
+  .line-item{
+    display:flex; justify-content:space-between;
+    font-size:13.5px;
+    padding:8px 0;
+    border-bottom:1px solid var(--line);
+  }
+  .line-item .k{ color:var(--ink-soft); }
+  .line-item .v{ font-weight:600; }
+
+  .app-status-row{
+    display:flex; align-items:center; gap:8px;
+    font-size:13px; font-weight:600;
+    margin-top:14px;
+  }
+  .status-dot{ width:8px; height:8px; border-radius:50%; }
+  .status-dot.st-resolved{ background:var(--resolved); }
+  .status-dot.st-active{ background:var(--active); }
+  .status-dot.st-neutral{ background:var(--ink-soft); }
+
+  .app-btn{
+    margin-top:18px;
+    width:100%;
+    padding:13px;
+    border-radius:12px;
+    border:1px solid var(--ink);
+    background:var(--ink);
+    color:var(--paper);
+    font-size:14px;
+    font-weight:600;
+    cursor:pointer;
+  }
+
+  /* ---------- Radar widget (signature element) ---------- */
+  .radar-widget{
+    display:flex;
+    align-items:center;
+    gap:14px;
+    background:var(--active-tint);
+    border:1px solid var(--active);
+    border-radius:16px;
+    padding:12px 14px;
+    margin:16px 0 4px;
+  }
+  .radar-visual{ position:relative; width:56px; height:56px; flex:0 0 auto; }
+  .radar-ring{
+    position:absolute; inset:0;
+    border:1.5px solid var(--active);
+    border-radius:50%;
+    opacity:0;
+    animation:sonar 2.4s ease-out infinite;
+  }
+  .radar-ring.ring-2{ animation-delay:1.2s; }
+  @keyframes sonar{
+    0%{ transform:scale(0.3); opacity:0.55; }
+    100%{ transform:scale(1); opacity:0; }
+  }
+  .radar-center{
+    position:absolute; top:50%; left:50%;
+    width:9px; height:9px;
+    background:var(--active);
+    border-radius:50%;
+    transform:translate(-50%,-50%);
+    box-shadow:0 0 0 3px var(--active-tint);
+    z-index:2;
+  }
+  .radar-dot{
+    position:absolute;
+    width:5px; height:5px;
+    background:var(--petal);
+    border-radius:50%;
+    opacity:0;
+    animation:popIn 0.45s ease forwards;
+  }
+  @keyframes popIn{ from{ opacity:0; transform:scale(0);} to{ opacity:1; transform:scale(1);} }
+
+  .radar-copy .radar-count{ font-size:15.5px; font-weight:800; margin:0; }
+  .count-num{ font-family:var(--mono); color:var(--active); }
+  .radar-sub{ font-size:11px; color:var(--ink-soft); margin:2px 0 0; font-family:var(--mono); }
+
+  .radar-empty{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    background:var(--paper-dim);
+    border:1px dashed var(--line);
+    border-radius:16px;
+    padding:14px 16px;
+    margin:16px 0 4px;
+    font-size:12.5px;
+    color:var(--ink-soft);
+  }
+
+  /* ---------- Annotation rail ---------- */
+  .annotation-rail{ padding-top:6px; }
+  .note-eyebrow{
+    font-family:var(--mono);
+    font-size:11px;
+    letter-spacing:0.1em;
+    text-transform:uppercase;
+    color:var(--ink-soft);
+    margin:0 0 8px;
+  }
+  .note-caption{
+    font-size:16px;
+    margin:0 0 24px;
+    max-width:52ch;
+  }
+
+  .fix-card{
+    border:1px solid var(--petal);
+    background:var(--petal-tint);
+    border-radius:16px;
+    padding:22px 24px;
+    max-width:54ch;
+  }
+  .fix-eyebrow{
+    font-family:var(--mono);
+    font-size:11px;
+    letter-spacing:0.1em;
+    text-transform:uppercase;
+    color:var(--petal);
+    margin:0 0 8px;
+  }
+  .fix-body{ font-size:14.5px; margin:0 0 18px; color:var(--ink); }
+
+  .metric-block{
+    background:var(--paper);
+    border-radius:12px;
+    padding:16px 18px;
+    margin-bottom:14px;
+  }
+  .metric-label{ font-size:11px; color:var(--ink-soft); margin:0 0 3px; text-transform:uppercase; letter-spacing:0.05em; }
+  .metric-value{ font-size:15px; font-weight:800; margin:0 0 4px; }
+  .metric-detail{ font-size:13px; color:var(--ink-soft); margin:0 0 12px; }
+  .metric-ladder{ font-size:12.5px; color:var(--active); font-weight:600; margin:0; }
+
+  .isolation-note{
+    font-size:12.5px;
+    color:var(--ink-soft);
+    margin:0 0 16px;
+    padding-left:12px;
+    border-left:2px solid var(--line);
+  }
+
+  .ac-list{ margin:0 0 18px; padding-left:18px; font-size:13px; color:var(--ink); }
+  .ac-list li{ margin-bottom:6px; }
+
+  .rail-btn{
+    font-family:var(--sans);
+    font-size:12.5px;
+    font-weight:600;
+    color:var(--ink);
+    background:var(--paper);
+    border:1px solid var(--ink);
+    border-radius:999px;
+    padding:9px 16px;
+    cursor:pointer;
+  }
+
+  /* ---------- Footer ---------- */
+  .reading-note{
+    margin-top:56px;
+    padding-top:20px;
+    border-top:1px solid var(--line);
+    max-width:70ch;
+  }
+  .reading-note p{ font-size:13.5px; color:var(--paper-dim); margin:0 0 6px; }
+
+  /* ---------- Focus & motion ---------- */
+  button:focus-visible{
+    outline:2px solid var(--ink);
+    outline-offset:2px;
+  }
+  @media (prefers-reduced-motion: reduce){
+    .radar-ring, .radar-dot{ animation:none !important; opacity:1 !important; transform:none !important; }
+  }
+
+  /* ---------- Responsive ---------- */
+  @media (max-width:840px){
+    .stage{ grid-template-columns:1fr; justify-items:center; }
+    .annotation-rail{ width:100%; max-width:420px; margin-top:32px; }
+    .note-caption, .fix-card{ max-width:100%; }
+  }
+  @media (max-width:420px){
+    .phone-frame{ width:100%; max-width:300px; }
+    .page{ padding:32px 16px 56px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="page">
+  <a href="../../index.html#projects" class="back-link">← Portfolio</a>
+
+  <header class="masthead">
+    <div class="kicker">Blitz PM Portfolio · Project 3 of 4</div>
+    <h1>The Partner Availability Test</h1>
+    <p class="dek">Cab apps show how many cars are nearby before you book. Checkout for same-day delivery shows nothing about whether the order can move fast. This is the test for whether that same signal earns trust here too.</p>
+  </header>
+
+  <div class="controls-bar">
+    <div class="flow-toggle" id="flowToggle">
+      <button type="button" data-flow="before" aria-pressed="true">Before</button>
+      <button type="button" data-flow="improved" aria-pressed="false">Improved</button>
+    </div>
+    <div class="metric-chip">Metric this moves: <strong>Checkout completion rate</strong></div>
+  </div>
+
+  <div class="stage" id="stage">
+    <div class="phone-column">
+      <div class="phone-frame">
+        <div class="phone-notch"></div>
+        <div class="phone-screen" id="screenRoot" role="region" aria-label="Phone screen preview" aria-live="polite"></div>
+      </div>
+      <div class="screen-nav">
+        <button type="button" id="prevBtn" aria-label="Previous screen">&larr;</button>
+        <div class="dots" id="dots"></div>
+        <button type="button" id="nextBtn" aria-label="Next screen">&rarr;</button>
+      </div>
+      <p class="screen-label" id="screenLabel"></p>
+    </div>
+
+    <aside class="annotation-rail" id="annotationRail"></aside>
+  </div>
+
+  <footer class="reading-note">
+    <p><strong>How to read this:</strong> toggle Before / Improved above, then click through each flow's three screens with the arrows or dots. On the Improved checkout screen, try the low-supply preview in the panel to see when the widget is designed to disappear.</p>
+    <p>This prototype is the visual half of the test plan. The hypothesis, primary metric, and guardrail live in the panel on the checkout screen, which is the one screen this test would actually ship to half of Blitz's checkout traffic.</p>
+  </footer>
+
+</div>
+
+<script>
+(function(){
+  var lowSupplyPreview = false;
+
+  // 10 fixed positions inside the 56px radar circle, expressed as percentages
+  var DOT_POSITIONS = [
+    {top:8, left:44}, {top:18, left:74}, {top:42, left:88},
+    {top:68, left:80}, {top:84, left:52}, {top:70, left:22},
+    {top:44, left:6}, {top:18, left:24}, {top:34, left:58},
+    {top:56, left:36}
+  ];
+
+  function topbar(){
+    return ''
+      + '<div class="app-topbar">'
+      +   '<span class="app-back" aria-hidden="true">&lsaquo;</span>'
+      +   '<span class="app-wordmark">Petal</span>'
+      +   '<span style="margin-left:auto;">#PT-10432</span>'
+      + '</div>';
+  }
+
+  function cartBody(){
+    return ''
+      + '<div class="app-body">'
+      +   '<p class="app-eyebrow">Your cart</p>'
+      +   '<h2 class="app-title">1 item &middot; &#8377;649</h2>'
+      +   '<p class="app-sub">Rose Serum + Vitamin C Kit</p>'
+      +   '<div class="line-item"><span class="k">Deliver to</span><span class="v">HSR Layout, Bengaluru</span></div>'
+      +   '<div class="line-item"><span class="k">Slot</span><span class="v">Today, 6:00–8:00 PM</span></div>'
+      +   '<button type="button" class="app-btn" id="toCheckoutBtn">Continue to checkout</button>'
+      + '</div>';
+  }
+
+  function radarMarkup(){
+    var dots = DOT_POSITIONS.map(function(p, i){
+      return '<div class="radar-dot" style="top:' + p.top + '%; left:' + p.left + '%; animation-delay:' + (i * 0.06) + 's;"></div>';
+    }).join('');
+    return ''
+      + '<div class="radar-widget">'
+      +   '<div class="radar-visual" aria-hidden="true">'
+      +     '<div class="radar-ring ring-1"></div>'
+      +     '<div class="radar-ring ring-2"></div>'
+      +     dots
+      +     '<div class="radar-center"></div>'
+      +   '</div>'
+      +   '<div class="radar-copy">'
+      +     '<p class="radar-count"><span class="count-num" id="countNum">0</span> delivery partners active</p>'
+      +     '<p class="radar-sub">near HSR Layout &middot; live count</p>'
+      +   '</div>'
+      + '</div>';
+  }
+
+  function radarEmptyMarkup(){
+    return ''
+      + '<div class="radar-empty">Partner availability is low near HSR Layout right now. This module stays hidden until it can be shown honestly.</div>';
+  }
+
+  var SCREENS = {
+    before: [
+      {
+        id:'b1', label:'Screen 1 · Cart', fix:false,
+        caption:'The cart, before checkout. This screen is identical in both flows.',
+        render: function(){ return topbar() + cartBody(); }
+      },
+      {
+        id:'b2', label:'Screen 2 · Checkout', fix:false,
+        caption:'Address and slot are confirmed. Nothing here tells the customer whether the order can actually move fast.',
+        render: function(){
+          return topbar()
+            + '<div class="app-body">'
+            +   '<p class="app-eyebrow">Checkout</p>'
+            +   '<h2 class="app-title">Confirm and pay</h2>'
+            +   '<div class="line-item"><span class="k">Deliver to</span><span class="v">HSR Layout, Bengaluru</span></div>'
+            +   '<div class="line-item"><span class="k">Slot</span><span class="v">Today, 6:00–8:00 PM</span></div>'
+            +   '<div class="line-item"><span class="k">Total</span><span class="v">&#8377;649</span></div>'
+            +   '<button type="button" class="app-btn" id="toConfirmBtn">Place order &mdash; &#8377;649</button>'
+            + '</div>';
+        }
+      },
+      {
+        id:'b3', label:'Screen 3 · Order placed', fix:false,
+        caption:'Confirmed, but the customer took it on faith the whole way through.',
+        render: function(){
+          return topbar()
+            + '<div class="app-body">'
+            +   '<p class="app-eyebrow">Order placed</p>'
+            +   '<h2 class="app-title">We will notify you when it ships</h2>'
+            +   '<p class="app-sub">You will not hear from us again until then.</p>'
+            +   '<div class="app-status-row"><span class="status-dot st-neutral"></span>Order placed</div>'
+            + '</div>';
+        }
+      }
+    ],
+    improved: [
+      {
+        id:'i1', label:'Screen 1 · Cart', fix:false,
+        caption:'Same cart as today. The fix is not here, it is one screen away.',
+        render: function(){ return topbar() + cartBody(); }
+      },
+      {
+        id:'i2', label:'Screen 2 · Checkout', fix:true,
+        caption:'The number that used to only exist inside Blitz\'s dispatch system, shown to the person about to place the order.',
+        render: function(){
+          var widget = lowSupplyPreview ? radarEmptyMarkup() : radarMarkup();
+          return topbar()
+            + '<div class="app-body">'
+            +   '<p class="app-eyebrow">Checkout</p>'
+            +   '<h2 class="app-title">Confirm and pay</h2>'
+            +   '<div class="line-item"><span class="k">Deliver to</span><span class="v">HSR Layout, Bengaluru</span></div>'
+            +   '<div class="line-item"><span class="k">Slot</span><span class="v">Today, 6:00–8:00 PM</span></div>'
+            +   widget
+            +   '<div class="line-item" style="border-bottom:none;"><span class="k">Total</span><span class="v">&#8377;649</span></div>'
+            +   '<button type="button" class="app-btn" id="toConfirmBtn">Place order &mdash; &#8377;649</button>'
+            + '</div>';
+        }
+      },
+      {
+        id:'i3', label:'Screen 3 · Order placed', fix:false,
+        caption:'No new promise gets made here. Packing takes longer than an assignment ping would, so the app stays quiet until there is something true to say.',
+        render: function(){
+          return topbar()
+            + '<div class="app-body">'
+            +   '<p class="app-eyebrow">Order placed</p>'
+            +   '<h2 class="app-title">We will notify you once a partner is assigned</h2>'
+            +   '<p class="app-sub">Your order is being packed now.</p>'
+            +   '<div class="app-status-row"><span class="status-dot st-active"></span>Packing your order</div>'
+            + '</div>';
+        }
+      }
+    ]
+  };
+
+  var state = { flow:'before', index:0 };
+
+  var screenRoot = document.getElementById('screenRoot');
+  var annotationRail = document.getElementById('annotationRail');
+  var dotsEl = document.getElementById('dots');
+  var screenLabel = document.getElementById('screenLabel');
+  var prevBtn = document.getElementById('prevBtn');
+  var nextBtn = document.getElementById('nextBtn');
+  var flowToggle = document.getElementById('flowToggle');
+  var prefersReducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function currentList(){ return SCREENS[state.flow]; }
+
+  function buildDots(){
+    dotsEl.innerHTML = '';
+    currentList().forEach(function(s, i){
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.setAttribute('aria-label', 'Go to ' + s.label);
+      if (i === state.index) b.setAttribute('aria-current', 'true');
+      b.addEventListener('click', function(){ setIndex(i); });
+      dotsEl.appendChild(b);
+    });
+  }
+
+  function animateCount(){
+    var el = document.getElementById('countNum');
+    if (!el) return;
+    var target = 10;
+    if (prefersReducedMotion){ el.textContent = target; return; }
+    var current = 0;
+    var timer = setInterval(function(){
+      current += 1;
+      el.textContent = current;
+      if (current >= target) clearInterval(timer);
+    }, 60);
+  }
+
+  function render(){
+    var screen = currentList()[state.index];
+    screenRoot.innerHTML = screen.render();
+    screenLabel.textContent = screen.label;
+
+    var toCheckoutBtn = document.getElementById('toCheckoutBtn');
+    if (toCheckoutBtn) toCheckoutBtn.addEventListener('click', function(){ setIndex(1); });
+
+    var toConfirmBtn = document.getElementById('toConfirmBtn');
+    if (toConfirmBtn) toConfirmBtn.addEventListener('click', function(){ setIndex(2); });
+
+    if (screen.id === 'i2' && !lowSupplyPreview) animateCount();
+
+    Array.prototype.forEach.call(dotsEl.children, function(dot, i){
+      if (i === state.index) dot.setAttribute('aria-current', 'true');
+      else dot.removeAttribute('aria-current');
+    });
+
+    prevBtn.disabled = state.index === 0;
+    nextBtn.disabled = state.index === currentList().length - 1;
+
+    renderAnnotation(screen);
+  }
+
+  function renderAnnotation(screen){
+    var eyebrow = state.flow === 'before' ? 'Current experience' : 'Proposed experience';
+    var html = '<p class="note-eyebrow">' + eyebrow + '</p>'
+      + '<p class="note-caption">' + screen.caption + '</p>';
+
+    if (screen.fix){
+      html += ''
+        + '<div class="fix-card">'
+        +   '<p class="fix-eyebrow">This is the fix</p>'
+        +   '<p class="fix-body">Cab apps show how many cars are nearby before you book. Checkout here shows nothing about whether the order can move fast. This tests whether that same signal earns trust at checkout too.</p>'
+        +   '<div class="metric-block">'
+        +     '<p class="metric-label">Hypothesis</p>'
+        +     '<p class="metric-detail">Showing live delivery-partner availability at checkout increases checkout completion, because right now the customer has no signal their order will move fast once placed.</p>'
+        +     '<p class="metric-label">Primary metric</p>'
+        +     '<p class="metric-value">Checkout completion rate</p>'
+        +     '<p class="metric-label">Guardrail metric</p>'
+        +     '<p class="metric-detail">Delivery complaint rate within 24 hours of the promised slot. Catches it if the number shown stops matching real assignment speed.</p>'
+        +     '<p class="metric-ladder">50/50 split &middot; ships only if completion improves with no negative move on the guardrail</p>'
+        +   '</div>'
+        +   '<p class="isolation-note">Everything else on this screen is unchanged from Before. If the layout moved along with the number, a result either way would not tell you what caused it.</p>'
+        +   '<p class="fix-eyebrow">What ships</p>'
+        +   '<ul class="ac-list">'
+        +     '<li>Partner count reflects live availability at the moment checkout loads, never cached or estimated</li>'
+        +     '<li>Widget is hidden below a minimum supply threshold, it never shows a low number</li>'
+        +     '<li>Post-order assignment time is tracked against the number shown, as the guardrail</li>'
+        +   '</ul>'
+        +   '<button type="button" class="rail-btn" id="lowSupplyToggle">' + (lowSupplyPreview ? 'Back to normal supply' : 'Preview: low-supply moment') + '</button>'
+        + '</div>';
+    }
+    annotationRail.innerHTML = html;
+
+    var toggleBtn = document.getElementById('lowSupplyToggle');
+    if (toggleBtn){
+      toggleBtn.addEventListener('click', function(){
+        lowSupplyPreview = !lowSupplyPreview;
+        render();
+      });
+    }
+  }
+
+  function setIndex(i){
+    state.index = Math.max(0, Math.min(currentList().length - 1, i));
+    render();
+  }
+
+  function setFlow(flow){
+    state.flow = flow;
+    state.index = 0;
+    lowSupplyPreview = false;
+    Array.prototype.forEach.call(flowToggle.querySelectorAll('button'), function(b){
+      b.setAttribute('aria-pressed', b.getAttribute('data-flow') === flow ? 'true' : 'false');
+    });
+    buildDots();
+    render();
+  }
+
+  flowToggle.addEventListener('click', function(e){
+    var btn = e.target.closest('button[data-flow]');
+    if (!btn) return;
+    setFlow(btn.getAttribute('data-flow'));
+  });
+
+  prevBtn.addEventListener('click', function(){ setIndex(state.index - 1); });
+  nextBtn.addEventListener('click', function(){ setIndex(state.index + 1); });
+
+  document.getElementById('stage').addEventListener('keydown', function(e){
+    if (e.key === 'ArrowRight') setIndex(state.index + 1);
+    if (e.key === 'ArrowLeft') setIndex(state.index - 1);
+  });
+
+  buildDots();
+  render();
+})();
+</script>
+
+</body>
+</html>
