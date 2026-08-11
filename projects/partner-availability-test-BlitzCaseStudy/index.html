@@ -497,6 +497,96 @@
     cursor:pointer;
   }
 
+    /* ---------- PRD Gem Button ---------- */
+  .prd-gem{
+    position:relative;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    font-family:var(--sans);
+    font-size:13px;
+    font-weight:700;
+    color:#FFFFFF;
+    background:var(--ink-2);
+    border:1px solid rgba(255,106,61,0.65);
+    border-radius:10px;
+    padding:8px 14px;
+    text-decoration:none;
+    cursor:pointer;
+    overflow:visible;
+    isolation:isolate;
+    box-shadow:
+      0 0 6px rgba(255,106,61,0.45),
+      0 0 14px rgba(255,106,61,0.22);
+    transition:
+      background 0.25s ease,
+      border-color 0.25s ease,
+      box-shadow 0.25s ease,
+      transform 0.25s ease;
+  }
+
+  /* Always-on glowing halo */
+  .prd-gem::before{
+    content:"";
+    position:absolute;
+    inset:-3px;
+    border-radius:12px;
+    background:conic-gradient(
+      from 0deg,
+      transparent 0deg,
+      transparent 210deg,
+      rgba(255,106,61,0.15) 245deg,
+      var(--petal) 285deg,
+      #FFD0C1 315deg,
+      rgba(255,106,61,0.15) 340deg,
+      transparent 360deg
+    );
+    animation:gemRotate 5s linear infinite;
+    z-index:-2;
+    filter:blur(1px);
+  }
+
+  /* Keeps the center dark while the orange highlight travels around it */
+  .prd-gem::after{
+    content:"";
+    position:absolute;
+    inset:0;
+    border-radius:9px;
+    background:var(--ink-2);
+    z-index:-1;
+  }
+
+  /* Hover: button itself turns orange */
+  .prd-gem:hover{
+    color:var(--ink);
+    background:var(--petal);
+    border-color:var(--petal);
+    transform:translateY(-1px);
+    box-shadow:
+      0 0 8px rgba(255,106,61,0.75),
+      0 0 20px rgba(255,106,61,0.45),
+      0 0 32px rgba(255,106,61,0.22);
+  }
+
+  .prd-gem:hover::after{
+    background:var(--petal);
+  }
+
+  @keyframes gemRotate{
+    from{ transform:rotate(0deg); }
+    to{ transform:rotate(360deg); }
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .prd-gem::before{
+      animation:none;
+    }
+
+    .prd-gem:hover{
+      transform:none;
+    }
+  }
+
   /* ---------- Footer ---------- */
   .reading-note{
     margin-top:56px;
@@ -544,7 +634,20 @@
       <button type="button" data-flow="before" aria-pressed="true">Before</button>
       <button type="button" data-flow="improved" aria-pressed="false">Improved</button>
     </div>
-    <div class="metric-chip">Metric this moves: <strong>Checkout completion rate</strong></div>
+
+    <a
+      href="assets/Blitz_PRD_Live_Partner_Availability_at_Checkout.docx"
+      class="prd-gem"
+      target="_blank"
+      rel="noopener"
+      aria-label="View Partner Availability PRD"
+    >
+      ✦ View PRD
+    </a>
+
+    <div class="metric-chip">
+      Metric this moves: <strong>Checkout completion rate</strong>
+    </div>
   </div>
 
   <div class="stage" id="stage">
